@@ -1,4 +1,6 @@
+
 const express = require("express");
+const router = express.Router();
 const {
   listContacts,
   getById,
@@ -7,10 +9,8 @@ const {
   updateContact,
   updateStatusContact,
 } = require("../../models/contacts");
-const { nanoid } = require("nanoid");
-const { createSchema, updateSchema } = require("../../models/utils");
 
-const router = express.Router();
+
 
 router.get("/", async (req, res, next) => {
   res.json(await listContacts());
@@ -18,7 +18,7 @@ router.get("/", async (req, res, next) => {
 
 router.get("/:contactId", async (req, res, next) => {
   const id = req.params.contactId;
-  const contact = getById(id);
+  const contact = await getById(id);
   if (contact) {
     res.json(contact);
   } else {
@@ -41,7 +41,7 @@ router.patch("/:contactId/favorite", async (req, res) => {
   }
 });
 
-  router.post("/", async (req, res, next) => {
+router.post("/", async (req, res, next) => {
   const body = req.body;
   const contact = await addContact(body);
   if (contact) {

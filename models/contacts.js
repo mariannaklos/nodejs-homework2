@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const { Contact } = require("./utils");
 require('dotenv').config();
 
 const DB_HOST = "mongodb+srv://mariannaklos:RkTdwxskdjcib7A6@cluster0.z9dckm9.mongodb.net/contacts?retryWrites=true&w=majority";
@@ -14,26 +15,7 @@ db.on('error', console.error.bind(console, 'Database connection error:'));
 db.once('open', () => {
   console.log('Database connection successful');
 });
-
-const contactSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: [true, 'Set name for contact'],
-  },
-  email: {
-    type: String,
-  },
-  phone: {
-    type: String,
-  },
-  favorite: {
-    type: Boolean,
-    default: false,
-  },
-});
-
-const Contact = mongoose.model('contacts', contactSchema);
-
+``
 async function addContact(contact) {
   try {
     const newContact = new Contact(contact);
