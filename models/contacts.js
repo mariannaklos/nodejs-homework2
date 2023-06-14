@@ -2,9 +2,8 @@ const mongoose = require("mongoose");
 const { Contact } = require("./utils");
 require('dotenv').config();
 
-const DB_HOST = "mongodb+srv://mariannaklos:RkTdwxskdjcib7A6@cluster0.z9dckm9.mongodb.net/contacts?retryWrites=true&w=majority";
 
-mongoose.connect(DB_HOST, {
+mongoose.connect(process.env.DB_HOST, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
