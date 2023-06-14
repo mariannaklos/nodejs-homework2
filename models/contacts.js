@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const { Contact } = require("./utils");
 require('dotenv').config();
 
+
 mongoose.connect(process.env.DB_HOST, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
