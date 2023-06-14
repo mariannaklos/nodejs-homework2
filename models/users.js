@@ -1,8 +1,8 @@
 const bcrypt = require('bcrypt');
 const { User } = require('./utils');
 const jwt = require('jsonwebtoken');
-
-
+const { nanoid } = require("nanoid");
+const { sendVerificationEmail } = require("../models/utils");
 
 async function register(req, res, next) {
     try {
@@ -13,10 +13,15 @@ async function register(req, res, next) {
             return res.status(409).json({ message: 'Email in use' });
         }
 
+        const verificationToken = nanoid(); 
+
+        await sendVerificationEmail(email, verificationToken);
+
         const hashedPassword = await bcrypt.hash(password, 10);
         const newUser = await User.create({
             email,
             password: hashedPassword,
+            verificationToken,
         });
 
         return res.status(201).json({
@@ -54,6 +59,10 @@ async function login(req, res, next) {
         if (!isPasswordCorrect) {
             return res.status(401).json({ message: 'Email or password is wrong' });
         }
+
+        if (user.verify === false) {
+        return res.status(401).json({ message: "Register and verify your email first" });
+    }
 
         const token = jwt.sign({ userId: user._id }, 'secret', { expiresIn: '1h' });
         user.token = token;

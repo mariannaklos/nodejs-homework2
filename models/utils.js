@@ -1,5 +1,6 @@
 const Joi = require("joi");
 const mongoose = require('mongoose');
+const sgMail = require("@sendgrid/mail");
 const { Schema } = mongoose;
 
 const createSchema = Joi.object({
@@ -33,6 +34,14 @@ const userSchema = new Schema({
   },
   token: String,
   avatarURL: String,
+  verify: {
+    type: Boolean,
+    default: false,
+  },
+  verificationToken: {
+    type: String,
+    default: null,
+  },
 });
 
 const User = mongoose.model("User", userSchema);
@@ -60,11 +69,29 @@ const contactSchema = new Schema({
 
 const Contact = mongoose.model("contacts", contactSchema);
 
-module.exports = {};
+async function sendVerificationEmail(email, verificationLink) {
+  sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+  const msg = {
+    to: email,
+    from: "kyryvova@gmail.com",
+    subject: "Verification mail",
+    text: `Please click the following link to verify your email: /user/verify/${verificationLink}`,
+    html: `<p>Please click the following link to verify your email: <a href="/user/verify/${verificationLink}">/user/verify/${verificationLink}</a></p>`,
+  };
+  sgMail
+    .send(msg)
+    .then(() => {
+      console.log("Email sent");
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+}
 
 module.exports = {
   createSchema,
   updateSchema,
   User,
   Contact,
+  sendVerificationEmail,
 };
